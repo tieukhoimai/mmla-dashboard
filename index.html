@@ -148,7 +148,7 @@ window.MMLA_ROWS = [{"SID":"P001","gender":"0","age":"20","SE":"0.41","EXP_SCORE
     </div>
     <div class="lx-card" id="card-roster">
       <h2>Class roster</h2>
-      <p class="lx-note">Sort by any column. Flags mark a score below 50%, or a perceived score 20 or more points away from the actual score.</p>
+      <p class="lx-note">Sort by any column. Gap is the perceived score minus the actual score, so a positive gap means the student expected a better result. Levels are Low (below 50%), Medium (50–70%) and High (above 70%). Flags mark a score below 50%, or a gap of 20 points or more in either direction.</p>
       <input class="lx-search" type="search" placeholder="Search students" aria-label="Search students">
       <div class="lx-tablebox">
         <table class="lx-table" id="table-roster" data-source="roster" data-row-key="SID">
@@ -175,14 +175,12 @@ window.MMLA_ROWS = [{"SID":"P001","gender":"0","age":"20","SE":"0.41","EXP_SCORE
     <div class="lx-grid">
       <div class="lx-card" id="card-expect">
         <h2>Expected, actual and perceived score</h2>
-        <p class="lx-note">Your expected score before the test, your actual score, and your perceived score after the test, next to the class mean.</p>
-        <div class="lx-legend"><span style="--sw: var(--lx-c0)">You</span><span style="--sw: var(--lx-muted)">Class mean</span></div>
+        <p class="lx-note">Your expected score before the test, your actual score, and your perceived score after the test.</p>
         <div class="lx-chart" id="chart-expect" data-source="roster kpis"></div>
       </div>
       <div class="lx-card" id="card-ltime">
         <h2>Where your time went</h2>
-        <p class="lx-note">Mean seconds per correct and per wrong answer, against the class mean.</p>
-        <div class="lx-legend"><span style="--sw: var(--lx-c0)">You</span><span style="--sw: var(--lx-muted)">Class mean</span></div>
+        <p class="lx-note">Mean seconds per correct and per wrong answer.</p>
         <div class="lx-chart" id="chart-ltime" data-source="roster kpis"></div>
       </div>
     </div>
@@ -526,12 +524,12 @@ window.LX = (() => {
       const me = rows('roster').find((r) => r.SID === id); const k = rows('kpis')[0];
       const ce = document.getElementById('chart-expect');
       if (LX.prep(ce, [st('roster'), st('kpis')]) && me && k) LX.columns(ce, [
-        { label: 'Expected', values: [me.exp_pct, k.mean_exp] }, { label: 'Actual', values: [me.score_pct, k.mean_score] }, { label: 'Perceived', values: [me.perceived_pct, k.mean_perceived] },
-      ], { fmt: pct, yMax: 100, colors: [dash.colors[0], 'var(--cds-chart-muted)'], names: [id, 'Class mean'] });
+        { label: 'Expected', values: [me.exp_pct] }, { label: 'Actual', values: [me.score_pct] }, { label: 'Perceived', values: [me.perceived_pct] },
+      ], { fmt: pct, yMax: 100, colors: [dash.colors[0]], names: [id] });
       const cl = document.getElementById('chart-ltime');
       if (LX.prep(cl, [st('roster'), st('kpis')]) && me && k) LX.columns(cl, [
-        { label: 'Per correct answer', values: [me.tpc, Math.round(d3.mean(rows('roster'), (r) => r.tpc) * 10) / 10] }, { label: 'Per wrong answer', values: [me.tpw, Math.round(d3.mean(rows('roster'), (r) => r.tpw) * 10) / 10] },
-      ], { fmt: (v) => v + ' s', colors: [dash.colors[0], 'var(--cds-chart-muted)'], names: [id, 'Class mean'] });
+        { label: 'Per correct answer', values: [me.tpc] }, { label: 'Per wrong answer', values: [me.tpw] },
+      ], { fmt: (v) => v + ' s', colors: [dash.colors[0]], names: [id] });
       const cq = document.getElementById('chart-seq');
       if (LX.prep(cq, [st('student_items')])) LX.strip(cq, rows('student_items').filter((r) => r.SID === id));
     },
